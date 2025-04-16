@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LC Resonance Calculator</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    body {
+      background-color: #121212;
+      color: #f0f0f0;
+      font-family: sans-serif;
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 1rem;
+      line-height: 1.6;
+    }
+    h1, h2 {
+      color: #64b5f6;
+    }
+    input, select, button {
+      background-color: #1e1e1e;
+      color: #fff;
+      border: 1px solid #444;
+      padding: 0.5rem;
+      margin: 0.25rem 0;
+      width: 100%;
+    }
+    button {
+      background-color: #1976d2;
+      cursor: pointer;
+    }
+    .calculator {
+      margin: 2rem 0;
+      padding: 1rem;
+      border: 1px solid #444;
+      border-radius: 8px;
+      background-color: #1e1e1e;
+    }
+    .result {
+      font-weight: bold;
+      color: #4dd0e1;
+    }
+  </style>
+</head>
+<body>
+  <h1>LC Resonance Calculator with Extended RLC Analysis</h1>
+
+  <p>
+    The LC (inductor-capacitor) resonant circuit is a fundamental component in electronics used in filters, oscillators, and frequency-selective networks. The resonance frequency occurs when the inductive reactance equals the capacitive reactance, resulting in a purely resistive impedance at that frequency.
+  </p>
+
+  <p>
+    At resonance, the energy oscillates between the magnetic field of the inductor and the electric field of the capacitor. The total impedance of the circuit is minimized in a series LC circuit and maximized in a parallel LC circuit. This behavior allows LC circuits to serve as bandpass or band-stop filters.
+  </p>
+
+  <p>
+    When resistance is included (RLC circuit), the circuit exhibits damped oscillations. The amount of damping depends on the resistance and is characterized by the quality factor \( Q \). Higher Q indicates lower energy loss and sharper resonance.
+  </p>
+
+  <p><strong>Resonant Frequency:</strong> \[ f = \frac{1}{2\pi\sqrt{LC}} \]</p>
+  <p><strong>Quality Factor (Q):</strong> \[ Q = \frac{1}{R} \sqrt{\frac{L}{C}} \]</p>
+  <p><strong>Bandwidth:</strong> \[ \text{Bandwidth} = \frac{f_0}{Q} \]</p>
+
+  <h2>Calculate Frequency (f)</h2>
+  <div class="calculator">
+    <label>Inductance L (mH):</label>
+    <input type="number" id="L1" placeholder="e.g. 1" />
+    <label>Capacitance C (pF):</label>
+    <input type="number" id="C1" placeholder="e.g. 1000" />
+    <label>Resistance R (Ω, optional):</label>
+    <input type="number" id="R1" placeholder="e.g. 10" />
+    <button onclick="calcF()">Calculate Frequency (kHz), Q and Bandwidth</button>
+    <p class="result" id="FResult"></p>
+  </div>
+
+  <h2>Calculate Capacitance (C)</h2>
+  <div class="calculator">
+    <label>Inductance L (mH):</label>
+    <input type="number" id="L2" placeholder="e.g. 1" />
+    <label>Frequency f (kHz):</label>
+    <input type="number" id="F2" placeholder="e.g. 100" />
+    <button onclick="calcC()">Calculate Capacitance (pF)</button>
+    <p class="result" id="CResult"></p>
+  </div>
+
+  <h2>Calculate Inductance (L)</h2>
+  <div class="calculator">
+    <label>Capacitance C (pF):</label>
+    <input type="number" id="C3" placeholder="e.g. 1000" />
+    <label>Frequency f (kHz):</label>
+    <input type="number" id="F3" placeholder="e.g. 100" />
+    <button onclick="calcL()">Calculate Inductance (mH)</button>
+    <p class="result" id="LResult"></p>
+  </div>
+
+  <script>
+    function calcF() {
+      const L = parseFloat(document.getElementById('L1').value);
+      const C = parseFloat(document.getElementById('C1').value);
+      const R = parseFloat(document.getElementById('R1').value);
+      if (isNaN(L) || isNaN(C)) return;
+      const f = 1 / (2 * Math.PI * Math.sqrt(L * 1e-3 * C * 1e-12)) / 1000;
+      let result = `f = ${f.toFixed(3)} kHz`;
+      if (!isNaN(R)) {
+        const Q = (1 / R) * Math.sqrt((L * 1e-3) / (C * 1e-12));
+        const BW = f / Q;
+        result += `, Q = ${Q.toFixed(2)}, Bandwidth = ${BW.toFixed(3)} kHz`;
+      }
+      document.getElementById('FResult').innerText = result;
+    }
+
+    function calcC() {
+      const L = parseFloat(document.getElementById('L2').value);
+      const f = parseFloat(document.getElementById('F2').value);
+      if (isNaN(L) || isNaN(f)) return;
+      const C = 1 / (Math.pow(2 * Math.PI * f * 1000, 2) * L * 1e-3) * 1e12;
+      document.getElementById('CResult').innerText = `C = ${C.toFixed(2)} pF`;
+    }
+
+    function calcL() {
+      const C = parseFloat(document.getElementById('C3').value);
+      const f = parseFloat(document.getElementById('F3').value);
+      if (isNaN(C) || isNaN(f)) return;
+      const L = 1 / (Math.pow(2 * Math.PI * f * 1000, 2) * C * 1e-12) * 1e3;
+      document.getElementById('LResult').innerText = `L = ${L.toFixed(3)} mH`;
+    }
+  </script>
+</body>
+</html>
